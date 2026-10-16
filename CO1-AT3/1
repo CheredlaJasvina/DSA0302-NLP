@@ -1,1 +1,10 @@
-
+import re
+n = int(input())
+token_re = re.compile(r"[A-Za-z]+(?:['-][A-Za-z]+)*")
+for _ in range(n):
+    try:
+        line = input()
+    except EOFError:
+        line = ""
+    toks = token_re.findall(line)
+    print(" ".join([str(len(toks))] + toks))
