@@ -1,0 +1,24 @@
+n, k = map(int, input().split())
+alphabet = input().split()
+start = int(input())
+acc = list(map(int, input().split()))
+accepting = set(acc[1:])
+t = int(input())
+delta = {}
+for _ in range(t):
+    a, c, b = input().split()
+    delta.setdefault((int(a), c), set()).add(int(b))
+q = int(input())
+for _ in range(q):
+    s = input().strip()
+    if s == "#":
+        s = ""
+    cur = {start}
+    for ch in s:
+        nxt = set()
+        for st in cur:
+            nxt |= delta.get((st, ch), set())
+        cur = nxt
+        if not cur:
+            break
+    print("ACCEPT" if cur & accepting else "REJECT")
