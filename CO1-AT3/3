@@ -1,0 +1,51 @@
+VOWELS = set("aeiou")
+def is_cons(ch):
+    return ch not in VOWELS          
+def vowel_groups(w):
+    groups, prev = 0, False
+    for ch in w:
+        v = ch in VOWELS
+        if v and not prev:
+            groups += 1
+        prev = v
+    return groups
+def doublable(w):
+    return (len(w) >= 3
+            and is_cons(w[-3]) and not is_cons(w[-2]) and is_cons(w[-1])
+            and w[-1] not in "wxy"
+            and vowel_groups(w) == 1)
+def cons_y(w):                       # ends in consonant + y
+    return len(w) >= 2 and w[-1] == "y" and is_cons(w[-2])
+def inflect(stem, feat):
+    if feat in ("N+PL", "V+3SG"):                       # Rule set A
+        if stem.endswith(("s", "x", "z", "ch", "sh")):
+            return stem + "es"
+        if len(stem) >= 2 and stem[-1] == "o" and is_cons(stem[-2]):
+            return stem + "es"
+        if cons_y(stem):
+            return stem[:-1] + "ies"
+        return stem + "s"
+    if feat == "V+PROG":                                # Rule set B
+        if len(stem) >= 3 and stem[-1] == "e" and is_cons(stem[-2]):
+            return stem[:-1] + "ing"
+        if doublable(stem):
+            return stem + stem[-1] + "ing"
+        return stem + "ing"
+    suffix = {"V+PAST": ("d", "ed"), "ADJ+COMP": ("r", "er"),
+              "ADJ+SUP": ("st", "est")}[feat]           # Rule set C
+    if stem.endswith("e"):
+        return stem + suffix[0]
+    if cons_y(stem):
+        return stem[:-1] + "i" + suffix[1]
+    if doublable(stem):
+        return stem + stem[-1] + suffix[1]
+    return stem + suffix[1]
+L = int(input())
+lex = {}
+for _ in range(L):
+    stem, feat, form = input().split()
+    lex[(stem, feat)] = form
+q = int(input())
+for _ in range(q):
+    stem, feat = input().split()
+    print(lex.get((stem, feat)) or inflect(stem, feat))
