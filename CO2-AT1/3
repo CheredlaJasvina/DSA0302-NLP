@@ -1,0 +1,54 @@
+
+import pandas as pd
+
+# Input words
+words = ["played", "player", "playing"]
+
+def stemming_analysis(word):
+    word = word.lower()
+
+    if word.endswith("ing"):
+        stem = word[:-3]
+        affix = "-ing"
+        transformation = "Inflectional"
+
+    elif word.endswith("ed"):
+        stem = word[:-2]
+        affix = "-ed"
+        transformation = "Inflectional"
+
+    elif word.endswith("er"):
+        stem = word[:-2]
+        affix = "-er"
+        transformation = "Derivational"
+
+    else:
+        stem = word
+        affix = "None"
+        transformation = "No transformation"
+
+    # Normalize all given forms
+    normalized = stem
+
+    return stem, affix, transformation, normalized
+
+
+# Process input words
+results = []
+
+for word in words:
+    stem, affix, transformation, normalized = (
+        stemming_analysis(word)
+    )
+
+    results.append({
+        "Original Word": word,
+        "Extracted Stem": stem,
+        "Removed Affix": affix,
+        "Transformation Type": transformation,
+        "Normalized Form": normalized
+    })
+
+# Display structured output
+df = pd.DataFrame(results)
+print(df.to_string(index=False))
