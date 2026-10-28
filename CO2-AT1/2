@@ -1,0 +1,60 @@
+
+import pandas as pd
+
+# Input words
+words = ["unhappy", "happiness", "happily"]
+
+def morphological_analysis(word):
+    prefix = "None"
+    suffix = "None"
+    root = word
+    transformations = []
+
+    # Identify prefix
+    if word.startswith("un"):
+        prefix = "un-"
+        root = word[2:]
+        transformations.append("Derivational")
+
+    # Identify suffix
+    if root.endswith("ness"):
+        suffix = "-ness"
+        root = root[:-4]
+        transformations.append("Derivational")
+
+    elif root.endswith("ily"):
+        suffix = "-ly"
+        root = root[:-3] + "y"
+        transformations.append("Derivational")
+
+    # Normalization
+    normalized_root = root
+
+    if not transformations:
+        classification = "No transformation"
+    else:
+        classification = ", ".join(transformations)
+
+    return prefix, root, suffix, classification, normalized_root
+
+
+# Analyze all words
+results = []
+
+for word in words:
+    prefix, root, suffix, classification, normalized = (
+        morphological_analysis(word)
+    )
+
+    results.append({
+        "Input Word": word,
+        "Prefix": prefix,
+        "Root": root,
+        "Suffix": suffix,
+        "Classification": classification,
+        "Normalized Root": normalized
+    })
+
+# Display results
+df = pd.DataFrame(results)
+print(df.to_string(index=False))
