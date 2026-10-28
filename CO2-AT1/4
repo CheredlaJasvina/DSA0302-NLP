@@ -1,0 +1,99 @@
+
+# Finite-State Morphological Parser
+
+words = ["writes", "writing", "written"]
+
+# Finite-state transition model
+transitions = {
+    "q0": {"read": "q1"},
+    "q1": {
+        "regular": "q2",
+        "irregular": "q3"
+    },
+    "q2": {"root_found": "q4"},
+    "q3": {"root_found": "q4"},
+    "q4": {"normalize": "qf"}
+}
+
+# Morphological rules
+regular_rules = {
+    "writes": {
+        "suffix": "-s",
+        "morphology": "write + -s",
+        "description": "Third-person singular",
+        "type": "Regular"
+    },
+    "writing": {
+        "suffix": "-ing",
+        "morphology": "write + -ing",
+        "description": "Present participle/gerund",
+        "type": "Regular"
+    }
+}
+
+irregular_rules = {
+    "written": {
+        "suffix": "-en (irregular stem change)",
+        "morphology": "write -> written",
+        "description": "Past participle",
+        "type": "Irregular"
+    }
+}
+
+def parse_word(word):
+    state = "q0"
+    path = ["q0"]
+
+    # Read input
+    state = transitions[state]["read"]
+    path.append(state)
+
+    # Classify the form
+    if word in regular_rules:
+        rule = regular_rules[word]
+        state = transitions[state]["regular"]
+    elif word in irregular_rules:
+        rule = irregular_rules[word]
+        state = transitions[state]["irregular"]
+    else:
+        return {
+            "Word": word,
+            "State Path": " -> ".join(path),
+            "Morphology": "Unknown",
+            "Type": "Unknown",
+            "Root": "Unknown",
+            "Normalized": "Unknown"
+        }
+
+    path.append(state)
+
+    # Identify the common root
+    state = transitions[state]["root_found"]
+    path.append(state)
+    root = "write"
+
+    # Normalize
+    state = transitions[state]["normalize"]
+    path.append(state)
+
+    return {
+        "Word": word,
+        "State Path": " -> ".join(path),
+        "Morphology": rule["morphology"],
+        "Suffix/Change": rule["suffix"],
+        "Inflection": rule["description"],
+        "Type": rule["type"],
+        "Root": root,
+        "Normalized": root
+    }
+
+# Parse all input words
+results = [parse_word(word) for word in words]
+
+# Display results
+print("FINITE-STATE MORPHOLOGICAL PARSING RESULTS\n")
+
+for result in results:
+    print("-" * 75)
+    for key, value in result.items():
+        print(f"{key:18}: {value}")
