@@ -1,0 +1,62 @@
+
+import pandas as pd
+
+# Input words
+words = ["connected", "connecting", "connection"]
+
+def morphological_analysis(word):
+    word = word.lower()
+
+    if word.endswith("ed"):
+        root = word[:-2]
+
+        # Handle doubled consonant: connectted-like stem correction
+        if root.endswith("t"):
+            root = root
+
+        suffix = "-ed"
+        suffix_type = "Inflectional"
+        base_form = root
+
+    elif word.endswith("ing"):
+        root = word[:-3]
+        suffix = "-ing"
+        suffix_type = "Inflectional"
+        base_form = root
+
+    elif word.endswith("ion"):
+        root = word[:-3]
+        suffix = "-ion"
+        suffix_type = "Derivational"
+        base_form = root
+
+    else:
+        root = word
+        suffix = "None"
+        suffix_type = "No suffix"
+        base_form = root
+
+    # Normalize all variants to the common base
+    if word in ["connected", "connecting", "connection"]:
+        base_form = "connect"
+
+    return root, suffix, suffix_type, base_form
+
+
+# Process each word
+results = []
+
+for word in words:
+    root, suffix, suffix_type, base = morphological_analysis(word)
+
+    results.append({
+        "Input Word": word,
+        "Root/Stem": root,
+        "Suffix": suffix,
+        "Suffix Type": suffix_type,
+        "Normalized Form": base
+    })
+
+# Display results in tabular format
+df = pd.DataFrame(results)
+print(df.to_string(index=False))
