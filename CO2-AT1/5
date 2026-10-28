@@ -1,0 +1,54 @@
+
+# Porter Stemmer-Based Preprocessing Module
+
+# If required, run this command:
+# !pip install nltk
+
+import pandas as pd
+from nltk.stem import PorterStemmer
+
+stemmer = PorterStemmer()
+
+words = ["relational", "relation", "relate"]
+
+# Rule-based trace for the given words
+traces = {
+    "relational": [
+        ("Step 2", "ational -> ate", "relate"),
+        ("Step 5a", "Remove final e", "relat")
+    ],
+    "relation": [
+        ("Step 2", "No applicable suffix change", "relation"),
+        ("Step 4", "Remove -ion", "relat")
+    ],
+    "relate": [
+        ("Step 2", "No applicable suffix change", "relate"),
+        ("Step 5a", "Remove final e", "relat")
+    ]
+}
+
+results = []
+
+for word in words:
+    stem = stemmer.stem(word)
+
+    # Build a readable record of intermediate steps
+    steps = traces[word]
+    intermediate_forms = " -> ".join(
+        [word] + [step[2] for step in steps]
+    )
+    applied_rules = "; ".join(
+        step[0] + ": " + step[1] for step in steps
+    )
+
+    results.append({
+        "Original Word": word,
+        "Applied Rules": applied_rules,
+        "Intermediate Forms": intermediate_forms,
+        "Final Stem": stem
+    })
+
+df = pd.DataFrame(results)
+
+print("PORTER STEMMER - DOCUMENT RETRIEVAL")
+print(df.to_string(index=False))
